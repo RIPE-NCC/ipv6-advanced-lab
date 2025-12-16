@@ -17,6 +17,10 @@ networks:
 - config:
     ipv4.address: none
     ipv6.address: none
+  name: hostb-to-cn1
+- config:
+    ipv4.address: none
+    ipv6.address: none
   name: cpe-to-bb4
 - config:
     ipv4.address: none

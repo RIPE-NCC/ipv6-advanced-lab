@@ -111,6 +111,9 @@
         - name: localweb
           mac: 00:16:3e:ee:00:55
           ip: 192.0.2.55
+        - name: hostb
+          mac: 00:16:3e:ee:00:56
+          ip: 192.0.2.56
     - name: Attach networks to the containers
       command:
         cmd: "incus network attach {{ item.network }} {{ item.container }} {{ item.ifname }} {{ item.ifname }}"
@@ -130,6 +133,9 @@
          - network: bb1-to-dc
            container: localweb
            ifname: to_bb1
+         - network: hostb-to-cn1
+           container: hostb
+           ifname: to_cn1
 
 - name: Provision www server
   hosts: www
@@ -264,6 +270,27 @@
         block: |
           auto to_cpe
           iface to_cpe inet dhcp
+    - name: make sure eth0 does not work
+      lineinfile:
+        path: /etc/network/interfaces
+        line: "iface eth0 inet manual"
+        regexp: '^iface eth0'
+    - name: make sure eth0 does not work
+      lineinfile:
+        path: /etc/network/interfaces
+        line: " up ip link set dev eth0 down"
+        insertafter: '^iface eth0'
+
+- name: Provision hostb
+  hosts: hostb
+  tags: container
+  tasks:
+    - name: configure IP addresses
+      blockinfile:
+        path: /etc/network/interfaces
+        block: |
+          auto to_cn1
+          iface to_cn1 inet dhcp
     - name: make sure eth0 does not work
       lineinfile:
         path: /etc/network/interfaces

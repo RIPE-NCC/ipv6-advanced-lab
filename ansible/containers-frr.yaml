@@ -219,6 +219,9 @@
          - network: hosta-to-cpe
            container: cpe
            ifname: to_hosta
+         - network: hostb-to-cn1
+           container: cn1
+           ifname: to_hostb
          - network: bb1-to-transit
            container: transit
            ifname: to_bb1
