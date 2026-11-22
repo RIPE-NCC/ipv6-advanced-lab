@@ -1,0 +1,16 @@
+[Unit]
+Description=Host address and backbone route on the data centre bridge
+After=incus.service
+BindsTo=incus.service
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+ExecStartPre=/usr/bin/timeout 60 /bin/sh -c 'until [ -e /sys/class/net/bb1-to-dc ]; do sleep 1; done'
+ExecStart=/usr/sbin/sysctl -q -w net.ipv6.conf.bb1-to-dc.accept_ra=0
+ExecStart=/usr/sbin/sysctl -q -w net.ipv6.conf.bb1-to-dc.disable_ipv6=0
+ExecStart=/usr/sbin/ip -6 address replace 3fff:100:0:3::ff/64 dev bb1-to-dc
+ExecStart=/usr/sbin/ip -6 route replace 3fff:100::/48 via 3fff:100:0:3::1 dev bb1-to-dc
+
+[Install]
+WantedBy=incus.service

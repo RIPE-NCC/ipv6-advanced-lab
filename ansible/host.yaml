@@ -140,6 +140,20 @@
         state: started
         enabled: on
 
+    - name: Deploy data centre host address unit file
+      template:
+        src: systemd/dc-host-address.service
+        dest: "/etc/systemd/system/"
+        mode: 0644
+      notify: restart dc-host-address
+
+    - name: Enable and start data centre host address
+      systemd:
+        name: dc-host-address.service
+        state: started
+        enabled: on
+        daemon_reload: yes
+
     - name: Trim unused host space
       command: fstrim -av
       become: true
@@ -153,6 +167,12 @@
 
     - name: systemctl daemon-reload
       systemd:
+        daemon_reload: yes
+
+    - name: restart dc-host-address
+      systemd:
+        name: dc-host-address.service
+        state: restarted
         daemon_reload: yes
 
 
