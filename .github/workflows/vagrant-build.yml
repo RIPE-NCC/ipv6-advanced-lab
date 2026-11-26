@@ -13,10 +13,10 @@ jobs:
     runs-on: macos-26
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v7
 
       - name: Cache Vagrant boxes
-        uses: actions/cache@v3
+        uses: actions/cache@v6
         with:
           path: ~/.vagrant.d/boxes
           key: ${{ runner.os }}-vagrant-${{ hashFiles('Vagrantfile') }}
@@ -33,23 +33,10 @@ jobs:
         run: vagrant up
 
       - name: Create a Vagrant box
-        run: vagrant package --vagrantfile Vagrantfile-in-box --output bgp-security-lab-$(cat version.txt).box
+        run: vagrant package --vagrantfile Vagrantfile-in-box --output ipv6-advanced-lab-$(cat version.txt).box
 
       - name: Store box file
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v7
         with:
           name: vagrant-box
-          path: "bgp-security-lab-*.box"
-
-      - name: Publish box file in the release
-        if: startsWith(github.ref, 'refs/tags/')
-        uses: djn24/add-asset-to-release@v1
-        continue-on-error: true
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          args: "bgp-security-lab-*.box"
-
-      - name: Publish box file in the Vagrant Cloud
-        env:
-          ATLAS_TOKEN: ${{ secrets.VAGRANT_CLOUD_TOKEN }}
-        run: vagrant cloud publish ripencc/bgpseclab $(cat version.txt) virtualbox bgp-security-lab-$(cat version.txt).box --force
+          path: "ipv6-advanced-lab-*.box"
